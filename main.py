@@ -55,8 +55,9 @@ class Parser:
     @staticmethod
     def initiate_web_driver() -> webdriver.Firefox:
         options = Options()
-        options.add_argument('--headless')
-        return webdriver.Firefox(options=options)
+        options.binary_location = r'C:\Program Files\Mozilla Firefox\firefox.exe'
+        # options.add_argument('--headless')
+        return webdriver.Firefox(executable_path='./geckodriver_32.exe', options=options)
 
 
 class ExchangeRate:
@@ -97,13 +98,13 @@ class ExchangeRateBlock:
 
     @property
     def rate(self) -> ExchangeRate:
-        rate, _ = self._soup_element.select_one('div.Typography').text.split()
+        rate, _ = self._soup_element.select_one('div.Typography').text.split('/')
         return ExchangeRate(rate)
 
 
 class MinFinExchangeRateParser(Parser):
     def __init__(self, *args, **kwargs):
-        super().__init__(url='https://minfin.com.ua/currency/auction/usd/buy/kiev/')
+        super().__init__(url='https://minfin.com.ua/ua/currency/auction/')
 
     def get_average_exchange_rate(self) -> ExchangeRate:
         soup = self.get_page_soup()
@@ -130,12 +131,13 @@ class MinFinExchangeRateParser(Parser):
         driver = self.initiate_web_driver()
         driver.get(self.url)
         element = driver.find_element(By.CSS_SELECTOR, f'div[id="{block_id}"] div.phoneBlock')
+        # driver.execute_script("arguments[0].scrollIntoView();", element)
         driver.execute_script("arguments[0].click();", element)
         return PhoneNumber(element.text)
 
 
 if __name__ == '__main__':
     mf_parser = MinFinExchangeRateParser()
-    print(mf_parser.get_average_exchange_rate())
-    print(mf_parser.get_max_exchange_rate())
-    print(mf_parser.get_max_exchange_rate_phone())
+    print(f"Average exchange rate: {mf_parser.get_average_exchange_rate()}")
+    print(f"Max exchange rate:{mf_parser.get_max_exchange_rate()}")
+    print(f"Max exchange rate phone number: {mf_parser.get_max_exchange_rate_phone()}")
