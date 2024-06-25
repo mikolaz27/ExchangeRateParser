@@ -11,5 +11,5 @@ driver = webdriver.Firefox(executable_path='./geckodriver_32.exe', options=optio
 
 driver.get("http://selenium.dev")
 
-time.sleep(5)
+time.sleep(10)
 driver.quit()

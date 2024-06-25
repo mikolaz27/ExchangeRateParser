@@ -1,4 +1,5 @@
 import re
+import time
 from decimal import Decimal
 
 import requests
@@ -56,7 +57,7 @@ class Parser:
     def initiate_web_driver() -> webdriver.Firefox:
         options = Options()
         options.binary_location = r'C:\Program Files\Mozilla Firefox\firefox.exe'
-        # options.add_argument('--headless')
+        options.add_argument('--headless')
         return webdriver.Firefox(executable_path='./geckodriver_32.exe', options=options)
 
 
@@ -114,7 +115,6 @@ class MinFinExchangeRateParser(Parser):
 
     def _get_all_exchange_blocks(self) -> list[ExchangeRateBlock]:
         soup = self.get_page_soup()
-        soup.select('div.CardWrapper')
         return [ExchangeRateBlock(exchange_block) for exchange_block in soup.select('div.CardWrapper')]
 
     def _get_maximum_rate_exchange_block(self) -> ExchangeRateBlock:
@@ -131,8 +131,11 @@ class MinFinExchangeRateParser(Parser):
         driver = self.initiate_web_driver()
         driver.get(self.url)
         element = driver.find_element(By.CSS_SELECTOR, f'div[id="{block_id}"] div.phoneBlock')
-        # driver.execute_script("arguments[0].scrollIntoView();", element)
+        time.sleep(5)
+        driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        time.sleep(5)
         driver.execute_script("arguments[0].click();", element)
+        time.sleep(5)
         return PhoneNumber(element.text)
 
 
