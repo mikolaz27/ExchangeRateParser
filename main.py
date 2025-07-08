@@ -49,6 +49,7 @@ class Parser:
     def get_page_sources(self) -> str:
         return self.get_page_soup().prettify()
 
+    # TODO: FIX SOMETHING (T-351)
     def get_page_soup(self) -> BeautifulSoup:
         raw_sources = self._get_page_response().text
         return BeautifulSoup(raw_sources, 'html.parser')
@@ -117,6 +118,7 @@ class MinFinExchangeRateParser(Parser):
         soup = self.get_page_soup()
         return [ExchangeRateBlock(exchange_block) for exchange_block in soup.select('div.CardWrapper')]
 
+    # TODO: FIX SOMETHING (T-355)
     def _get_maximum_rate_exchange_block(self) -> ExchangeRateBlock:
         return max(
             self._get_all_exchange_blocks(),
